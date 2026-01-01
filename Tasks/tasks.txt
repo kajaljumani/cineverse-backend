@@ -1,0 +1,167 @@
+YOUR OBJECTIVES
+1. API-FIRST DESIGN
+
+Implement a clean, versioned REST API
+
+Mobile app consumes only our backend, never TMDB directly
+
+Use Laravel best practices (Form Requests, Resources, Policies)
+
+2. CORE FEATURES TO IMPLEMENT
+A. Authentication
+
+JWT or Laravel Sanctum
+
+Login / Register / Logout
+
+Fetch & update profile
+
+B. User Preferences
+
+Create APIs to:
+
+Save onboarding preferences
+
+Update preferences later
+
+Fetch preferences
+
+Preferences include:
+
+Genres (array)
+
+Languages (array)
+
+Streaming providers (array)
+
+Min rating
+
+Release year range
+
+Store as JSON where appropriate.
+
+C. TMDB Integration Layer
+
+Create a dedicated TMDBService
+
+Cache movie/series data locally in DB
+
+Store:
+
+tmdb_id
+
+type (movie / tv)
+
+title
+
+poster_path
+
+backdrop_path
+
+genres
+
+rating
+
+release_date
+
+provider availability (if available)
+
+Never expose TMDB API keys to frontend.
+
+D. Discovery / Feed Engine (CRITICAL)
+
+Implement feed logic that:
+
+Fetches candidate items from local cache
+
+Applies user preference filters
+
+Excludes:
+
+Disliked
+
+Watched
+
+Sorts by:
+
+Preference match score
+
+Rating
+
+Popularity
+
+Returns paginated feed
+
+Include a simple rule-based scoring system (no ML).
+
+E. User Interaction APIs
+
+Track all interactions:
+
+Like
+
+Dislike
+
+Watched
+
+Skipped
+
+Each interaction must:
+
+Be idempotent
+
+Affect future feed results
+
+F. Watchlist APIs
+
+Add to watchlist
+
+Remove from watchlist
+
+Mark as watched
+
+Fetch watchlist (filters supported)
+
+G. Comments (Optional but Implementable)
+
+Add comment on movie/series
+
+Fetch comments (paginated)
+
+Delete own comment
+
+H. Cron Jobs
+
+Daily: fetch trending movies & series
+
+Weekly: refresh ratings
+
+Store results in DB for feed use
+
+DELIVERABLES
+
+You must produce:
+
+Database migrations
+
+Eloquent models & relationships
+
+API routes
+
+Controllers
+
+Services (TMDB, FeedScoring)
+
+Example API responses
+
+Clear inline comments where logic is non-trivial
+
+STRICT RULES
+
+DO NOT rewrite existing unrelated code
+
+DO NOT introduce paid services
+
+DO NOT change mobile UX assumptions
+
+All APIs must be documented via response examples
