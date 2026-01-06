@@ -18,21 +18,22 @@ class InteractionController extends Controller
         $type = $validated['type'];
 
         // Record Interaction (Idempotent)
+        // Uses updateOrCreate to ensure a user only has one interaction state per media item.
+        // If they change their mind (e.g., like -> dislike), it updates the existing record.
         $interaction = $user->interactions()->updateOrCreate(
             ['media_id' => $mediaId],
             ['type' => $type]
         );
 
         // Handle Side Effects
-        if ($type === 'like') {
-            $user->watchlist()->firstOrCreate(['media_id' => $mediaId]);
-        } elseif ($type === 'watched') {
+        // Note: 'like' does NOT add to watchlist anymore (per new requirements).
+        if ($type === 'watched') {
             $user->watchlist()->updateOrCreate(
                 ['media_id' => $mediaId],
                 ['watched_at' => now()]
             );
         } elseif ($type === 'dislike') {
-            // Remove from watchlist if disliked?
+            // If disliked, ensure it's removed from watchlist if it was there previously
             $user->watchlist()->where('media_id', $mediaId)->delete();
         }
 

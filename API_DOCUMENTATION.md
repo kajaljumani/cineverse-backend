@@ -129,10 +129,10 @@ Update the user's discovery preferences.
 
 ---
 
-## Discovery Feed
+## Discovery Feed & Media
 
-### 7. Get Feed
-Get a paginated list of media recommendations based on preferences.
+### 7. Get Global Feed
+Get the global discovery feed with curated sections. Same for all users.
 
 - **Endpoint:** `GET /feed`
 - **Headers:** `Authorization: Bearer <token>`, `Accept: application/json`
@@ -146,6 +146,7 @@ Get a paginated list of media recommendations based on preferences.
         "id": 101,
         "tmdb_id": 550,
         "title": "Fight Club",
+        "overview": "A ticking-time-bomb insomniac...",
         "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
         "rating": 8.4,
         ...
@@ -157,13 +158,85 @@ Get a paginated list of media recommendations based on preferences.
   }
   ```
 
+### 7. Get Global Feed
+Get the global discovery feed with curated sections. Same for all users.
+
+- **Endpoint:** `GET /feed`
+- **Headers:** `Authorization: Bearer <token>`, `Accept: application/json`
+- **Response (200 OK):**
+  ```json
+  {
+    "trending": [
+      { "id": 1, "title": "Popular Movie", ... },
+      ...
+    ],
+    "latest": [
+      { "id": 2, "title": "New Release", ... },
+      ...
+    ],
+    "random": [
+      { "id": 3, "title": "Random Pick", ... },
+      ...
+    ]
+  }
+  ```
+
+### 8. Get Swipe Feed (Personalized)
+Get a paginated list of media recommendations based on user preferences and past interactions. This is for the "Home Swipe" feature.
+
+- **Endpoint:** `GET /swipe`
+- **Headers:** `Authorization: Bearer <token>`, `Accept: application/json`
+- **Query Parameters:** `page=1` (optional)
+- **Response (200 OK):**
+  ```json
+  {
+    "current_page": 1,
+    "data": [
+      {
+        "id": 101,
+        "tmdb_id": 550,
+        "title": "Fight Club",
+        ...
+      },
+      ...
+    ],
+    "next_page_url": "http://.../api/swipe?page=2",
+    ...
+  }
+  ```
+
+### 9. Get Media Details
+Get detailed information about a specific media item.
+
+- **Endpoint:** `GET /media/{id}`
+- **Headers:** `Authorization: Bearer <token>`, `Accept: application/json`
+- **Response (200 OK):**
+  ```json
+  {
+    "id": 101,
+    "tmdb_id": 550,
+    "type": "movie",
+    "title": "Fight Club",
+    "overview": "A ticking-time-bomb insomniac and a slippery soap salesman channel primal male aggression into a shocking new form of therapy. Their concept catches on, with underground \"fight clubs\" forming in every town, until an eccentric gets in the way and ignites an out-of-control spiral toward oblivion.",
+    "poster_path": "/pB8BM7pdSp6B6Ih7QZ4DrQ3PmJK.jpg",
+    "backdrop_path": "/hZkgoQYus5vegHoetLkCJzb17zJ.jpg",
+    "genres": [18],
+    "rating": 8.4,
+    "release_date": "1999-10-15",
+    "popularity": 61.416,
+    "created_at": "2026-01-01T12:00:00.000000Z",
+    "updated_at": "2026-01-01T12:00:00.000000Z"
+  }
+  ```
+
 ---
 
 ## Interactions
 
-### 8. Record Interaction
+### 10. Record Interaction
 Record a user's action on a media item (Like, Dislike, Watched, Skipped).
-*Note: 'like' automatically adds to watchlist.*
+*Note: 'like' does NOT add to watchlist. Use the Watchlist API for that.*
+*Note: 'watched' interaction WILL add the item to the Watchlist marked as seen (Swipe Up behavior).*
 
 - **Endpoint:** `POST /interactions`
 - **Headers:** `Authorization: Bearer <token>`, `Content-Type: application/json`, `Accept: application/json`
@@ -188,7 +261,7 @@ Record a user's action on a media item (Like, Dislike, Watched, Skipped).
 
 ## Watchlist
 
-### 9. Get Watchlist
+### 11. Get Watchlist
 Get the user's watchlist.
 
 - **Endpoint:** `GET /watchlist`
@@ -213,7 +286,7 @@ Get the user's watchlist.
   }
   ```
 
-### 10. Add to Watchlist
+### 12. Add to Watchlist
 Manually add an item to the watchlist.
 
 - **Endpoint:** `POST /watchlist`
@@ -233,7 +306,7 @@ Manually add an item to the watchlist.
   }
   ```
 
-### 11. Remove from Watchlist
+### 13. Remove from Watchlist
 Remove an item from the watchlist.
 
 - **Endpoint:** `DELETE /watchlist/{mediaId}`
@@ -245,7 +318,7 @@ Remove an item from the watchlist.
   }
   ```
 
-### 12. Mark as Watched
+### 14. Mark as Watched
 Mark an item in the watchlist as watched.
 
 - **Endpoint:** `PATCH /watchlist/{mediaId}/watched`
@@ -261,7 +334,7 @@ Mark an item in the watchlist as watched.
 
 ## Comments
 
-### 13. Get Comments
+### 15. Get Comments
 Get comments for a specific media item.
 
 - **Endpoint:** `GET /media/{mediaId}/comments`
@@ -282,7 +355,7 @@ Get comments for a specific media item.
   }
   ```
 
-### 14. Add Comment
+### 16. Add Comment
 Add a comment to a media item.
 
 - **Endpoint:** `POST /media/{mediaId}/comments`
@@ -302,7 +375,7 @@ Add a comment to a media item.
   }
   ```
 
-### 15. Delete Comment
+### 16. Delete Comment
 Delete a user's own comment.
 
 - **Endpoint:** `DELETE /comments/{id}`

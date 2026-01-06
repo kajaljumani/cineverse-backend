@@ -18,12 +18,22 @@ class WatchlistController extends Controller
             'media_id' => 'required|exists:media,id',
         ]);
 
-        $watchlist = $request->user()->watchlist()->firstOrCreate(
-            ['media_id' => $validated['media_id']]
-        );
+        $user = $request->user();
+        $mediaId = $validated['media_id'];
 
-        // Also log as 'like' interaction if not exists?
-        // Let's keep it simple.
+        // Check for duplicates
+        $existing = $user->watchlist()->where('media_id', $mediaId)->first();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'Media already in watchlist',
+                'data' => $existing
+            ], 200);
+        }
+
+        $watchlist = $user->watchlist()->create([
+            'media_id' => $mediaId
+        ]);
 
         return response()->json($watchlist, 201);
     }

@@ -5,6 +5,7 @@ use App\Http\Controllers\UserPreferenceController;
 use App\Http\Controllers\FeedController;
 use App\Http\Controllers\InteractionController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\MediaController;
 use App\Http\Controllers\CommentController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -20,8 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/preferences', [UserPreferenceController::class, 'show']);
     Route::post('/preferences', [UserPreferenceController::class, 'store']);
 
-    // Feed
-    Route::get('/feed', [FeedController::class, 'index']);
+    // Feed & Media
+    Route::get('/feed', [FeedController::class, 'index']); // Global Feed
+    Route::get('/swipe', [FeedController::class, 'swipe']); // Personalized Swipe
+    Route::get('/media/{id}', [MediaController::class, 'show']);
 
     // Interactions
     Route::post('/interactions', [InteractionController::class, 'store']);

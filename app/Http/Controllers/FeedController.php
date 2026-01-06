@@ -2,56 +2,41 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\MediaResource;
+use App\Services\FeedService;
 use Illuminate\Http\Request;
 
 class FeedController extends Controller
 {
+    protected $feedService;
+
+    public function __construct(FeedService $feedService)
+    {
+        $this->feedService = $feedService;
+    }
+
+    /**
+     * Home Swipe (Personalized)
+     * Endpoint: /swipe
+     */
+    public function swipe(Request $request)
+    {
+        $feed = $this->feedService->getSwipeFeed($request->user());
+        return MediaResource::collection($feed);
+    }
+
+    /**
+     * Global Feed (Non-personalized)
+     * Endpoint: /feed
+     */
     public function index(Request $request)
     {
-        $user = $request->user();
-        $preferences = $user->preferences;
-
-        // Get IDs of media the user has already interacted with
-        $interactedMediaIds = $user->interactions()->pluck('media_id');
-
-        $query = \App\Models\Media::query();
-
-        // Exclude interacted media
-        $query->whereNotIn('id', $interactedMediaIds);
-
-        // Apply User Preferences
-        if ($preferences) {
-            if ($preferences->min_rating) {
-                $query->where('rating', '>=', $preferences->min_rating);
-            }
-
-            if ($preferences->release_year_start) {
-                $query->whereYear('release_date', '>=', $preferences->release_year_start);
-            }
-
-            if ($preferences->release_year_end) {
-                $query->whereYear('release_date', '<=', $preferences->release_year_end);
-            }
-
-            // Genre filtering (simplified: if user has genres, show media that has at least one)
-            // This depends on how genres are stored. Assuming JSON array of IDs.
-            // SQLite/MySQL JSON support required.
-            if (!empty($preferences->genres)) {
-                 $query->where(function ($q) use ($preferences) {
-                     foreach ($preferences->genres as $genreId) {
-                         $q->orWhereJsonContains('genres', $genreId);
-                     }
-                 });
-            }
-        }
-
-        // Sorting (Rule-based)
-        // For now, simple sort by popularity and rating
-        $query->orderByDesc('popularity')
-              ->orderByDesc('rating');
-
-        $feed = $query->paginate(10);
-
-        return response()->json($feed);
+        $feed = $this->feedService->getGlobalFeed($request->user());
+        
+        return response()->json([
+            'trending' => MediaResource::collection($feed['trending']),
+            'latest' => MediaResource::collection($feed['latest']),
+            'random' => MediaResource::collection($feed['random']),
+        ]);
     }
 }

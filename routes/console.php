@@ -8,5 +8,4 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('media:fetch-trending')->daily();
-Schedule::command('media:refresh-ratings')->weekly();
+Schedule::command('tmdb:fetch')->hourly();
