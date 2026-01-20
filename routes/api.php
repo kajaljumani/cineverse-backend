@@ -25,6 +25,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/feed', [FeedController::class, 'index']); // Global Feed
     Route::get('/swipe', [FeedController::class, 'swipe']); // Personalized Swipe
     Route::get('/media/{id}', [MediaController::class, 'show']);
+    Route::get('/media/{id}/videos', [MediaController::class, 'videos']);
 
     // Interactions
     Route::post('/interactions', [InteractionController::class, 'store']);

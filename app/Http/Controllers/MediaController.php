@@ -29,4 +29,14 @@ class MediaController extends Controller
 
         return new MediaResource($media);
     }
+
+    public function videos($id)
+    {
+        $media = \App\Models\Media::findOrFail($id);
+        $videos = $this->tmdbService->getVideos($media);
+
+        return response()->json([
+            'data' => $videos
+        ]);
+    }
 }

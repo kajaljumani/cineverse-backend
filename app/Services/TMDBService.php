@@ -172,6 +172,31 @@ class TMDBService
         return false;
     }
 
+    public function getVideos(Media $media)
+    {
+        $endpoint = ($media->type === MediaType::Movie) ? "movie/{$media->tmdb_id}/videos" : "tv/{$media->tmdb_id}/videos";
+
+        $response = Http::get("{$this->baseUrl}/{$endpoint}", [
+            'api_key' => $this->apiKey,
+        ]);
+
+        if ($response->successful()) {
+            $results = $response->json()['results'] ?? [];
+            return collect($results)->map(function ($video) {
+                return [
+                    'id' => $video['id'],
+                    'key' => $video['key'],
+                    'name' => $video['name'],
+                    'type' => $video['type'],
+                    'site' => $video['site'],
+                ];
+            })->toArray();
+        }
+
+        return [];
+    }
+
+
     protected function updateMediaDetails(Media $media, $data)
     {
         // Cast (Top 5)

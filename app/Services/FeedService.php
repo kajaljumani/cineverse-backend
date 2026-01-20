@@ -18,6 +18,53 @@ class FeedService
     }
 
     /**
+     * Get paginated feed with filtering/searching
+     */
+    public function getFeed($type, User $user = null, $search = null, int $perPage = 10)
+    {
+        $query = Media::query();
+
+        // Search
+        if ($search) {
+            $query->where('title', 'like', "%{$search}%");
+        }
+
+        // Type Sorting
+        if ($type === 'latest') {
+            $query->orderByDesc('release_date');
+        } elseif ($type === 'random') {
+            $query->inRandomOrder();
+        } else {
+            // trending
+            $query->orderByDesc('popularity');
+        }
+
+        $query->withCounts();
+
+        $paginator = $query->paginate($perPage);
+
+        // If results are empty (and no search is active, or even if it is), try to fetch from TMDB to fill DB
+        // Only fetch if not searching, or if searching yields nothing (advanced: search TMDB)
+        if ($paginator->isEmpty() && !$search) {
+            if ($type === 'latest') {
+                $this->tmdbService->importFromTMDB($user); 
+            } else {
+                 $this->tmdbService->fetchAndCacheAll();
+            }
+            
+            // Re-run query after fetch
+            $paginator = $query->paginate($perPage);
+        }
+        
+        if ($user) {
+             $items = $this->hydrateUserStatus($paginator->getCollection(), $user);
+             $paginator->setCollection($items);
+        }
+
+        return $paginator;
+    }
+
+    /**
      * Get the personalized feed for the "Home Swipe" feature.
      * Applies user preferences and excludes interacted media.
      * Automatically fetches more data from TMDB if local supply is exhausted.
@@ -93,24 +140,47 @@ class FeedService
      * Get the global feed (non-personalized).
      * Returns sections: Trending, Latest, Random.
      * Uses caching for static sections.
+     * Automatically seeding from TMDB if local data is sparse.
      */
     public function getGlobalFeed(User $user = null)
     {
         // Versioned cache keys to ensure fresh structure with counts
-        $trending = Cache::remember('feed_trending_v2', 3600, function () {
-            return Media::query()
+        $trending = Cache::remember('feed_trending_v3', 3600, function () {
+            $data = Media::query()
                 ->withCounts()
                 ->orderByDesc('popularity')
                 ->limit(10)
                 ->get();
+            
+            if ($data->isEmpty()) {
+                $this->tmdbService->fetchAndCacheAll();
+                return Media::query()
+                    ->withCounts()
+                    ->orderByDesc('popularity')
+                    ->limit(10)
+                    ->get();
+            }
+
+            return $data;
         });
 
-        $latest = Cache::remember('feed_latest_v2', 3600, function () {
-            return Media::query()
+        $latest = Cache::remember('feed_latest_v3', 3600, function () use ($user) {
+            $data = Media::query()
                 ->withCounts()
                 ->orderByDesc('release_date')
                 ->limit(10)
                 ->get();
+            
+            if ($data->isEmpty()) {
+                $this->tmdbService->importFromTMDB($user);
+                return Media::query()
+                    ->withCounts()
+                    ->orderByDesc('release_date')
+                    ->limit(10)
+                    ->get();
+            }
+
+            return $data;
         });
 
         // Random changes per request, no cache
@@ -119,6 +189,16 @@ class FeedService
             ->inRandomOrder()
             ->limit(10)
             ->get();
+        
+        // If random is empty (meaning DB is likely empty and cache didn't trigger fetch), force a fetch
+        if ($random->isEmpty()) {
+            $this->tmdbService->fetchPopular();
+            $random = Media::query()
+                ->withCounts()
+                ->inRandomOrder()
+                ->limit(10)
+                ->get();
+        }
 
         if ($user) {
             $trending = $this->hydrateUserStatus($trending, $user);

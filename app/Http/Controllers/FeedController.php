@@ -31,6 +31,14 @@ class FeedController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->has('type')) {
+            $type = $request->input('type', 'trending');
+            $search = $request->input('query');
+            
+            $feed = $this->feedService->getFeed($type, $request->user(), $search);
+            return MediaResource::collection($feed);
+        }
+
         $feed = $this->feedService->getGlobalFeed($request->user());
         
         return response()->json([
