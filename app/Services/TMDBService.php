@@ -102,6 +102,13 @@ class TMDBService
     {
         $page = rand(1, 5); // Add randomness
         
+        // TMDB Genre IDs vary between Movie and TV
+        // 53 is Thriller (Movie), but not standard for TV
+        $movieGenres = [28, 12, 16, 35, 80, 99, 18, 10751, 14, 36, 27, 10402, 9648, 10749, 878, 10770, 53, 10752, 37];
+        $tvGenres = [10759, 16, 35, 80, 99, 18, 10751, 10762, 9648, 10763, 10764, 10765, 10766, 10767, 10768, 37];
+
+        $prefGenres = $prefs->genres ?? [];
+
         // Common Params
         $params = [
             'sort_by' => 'popularity.desc',
@@ -109,29 +116,77 @@ class TMDBService
             'vote_average.gte' => $prefs->min_rating ?? 0,
         ];
 
-        if (!empty($prefs->genres)) {
-             $params['with_genres'] = implode(',', $prefs->genres);
-        }
-
         // --- Movies ---
-        $movieParams = $params;
-        if ($prefs->release_year_start) {
-            $movieParams['primary_release_date.gte'] = "{$prefs->release_year_start}-01-01";
+        if ($prefs->content_type === 'movie' || $prefs->content_type === 'any') {
+            $movieParams = $params;
+            $validMovieGenres = array_intersect($prefGenres, $movieGenres);
+            if (!empty($validMovieGenres)) {
+                $movieParams['with_genres'] = implode(',', $validMovieGenres);
+            }
+            if ($prefs->release_year_start) {
+                $movieParams['primary_release_date.gte'] = "{$prefs->release_year_start}-01-01";
+            }
+            if ($prefs->release_year_end) {
+                $movieParams['primary_release_date.lte'] = "{$prefs->release_year_end}-12-31";
+            }
+            $results = $this->discover('movie', $movieParams);
+            
+            // Fallback if no results with genres
+            if (empty($results) && !empty($validMovieGenres)) {
+                unset($movieParams['with_genres']);
+                $this->discover('movie', $movieParams);
+            }
         }
-        if ($prefs->release_year_end) {
-            $movieParams['primary_release_date.lte'] = "{$prefs->release_year_end}-12-31";
-        }
-        $this->discover('movie', $movieParams);
 
         // --- TV Shows ---
-        $tvParams = $params;
-        if ($prefs->release_year_start) {
-            $tvParams['first_air_date.gte'] = "{$prefs->release_year_start}-01-01";
+        if ($prefs->content_type === 'tv' || $prefs->content_type === 'any') {
+            $tvParams = $params;
+            $validTvGenres = array_intersect($prefGenres, $tvGenres);
+            // If user selected Thriller (53), map it to Mystery (9648) for TV if not already there
+            if (in_array(53, $prefGenres) && !in_array(9648, $validTvGenres)) {
+                $validTvGenres[] = 9648;
+            }
+            
+            if (!empty($validTvGenres)) {
+                $tvParams['with_genres'] = implode(',', $validTvGenres);
+            }
+            if ($prefs->release_year_start) {
+                $tvParams['first_air_date.gte'] = "{$prefs->release_year_start}-01-01";
+            }
+            \Log::info("Discovering TV with params: ", $tvParams);
+            $results = $this->discover('tv', $tvParams);
+            \Log::info("TV Discover results count: " . count($results));
+
+            // Fallback if no results with genres
+            if (empty($results) && !empty($validTvGenres)) {
+                \Log::info("Falling back to generic TV discovery");
+                unset($tvParams['with_genres']);
+                $this->discover('tv', $tvParams);
+            }
         }
-        if ($prefs->release_year_end) {
-            $tvParams['first_air_date.lte'] = "{$prefs->release_year_end}-12-31";
+    }
+
+    public function search($type = 'movie', $query = '', $page = 1)
+    {
+        $endpoint = $type === 'movie' ? 'search/movie' : 'search/tv';
+        
+        $response = Http::get("{$this->baseUrl}/{$endpoint}", [
+            'api_key' => $this->apiKey,
+            'query' => $query,
+            'page' => $page
+        ]);
+
+        if ($response->successful()) {
+            $results = $response->json()['results'] ?? [];
+            foreach ($results as $item) {
+                $item['media_type'] = $type; 
+                $this->cacheMedia($item);
+            }
+            return $results;
         }
-        $this->discover('tv', $tvParams);
+
+        \Log::error("TMDB Search failed: {$response->status()} - " . $response->body());
+        return [];
     }
 
     public function discover($type = 'movie', $params = [])
@@ -151,6 +206,7 @@ class TMDBService
             return $results;
         }
 
+        \Log::error("TMDB Discover failed: {$response->status()} - " . $response->body());
         return [];
     }
 

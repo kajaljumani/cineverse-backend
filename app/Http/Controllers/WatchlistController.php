@@ -8,7 +8,17 @@ class WatchlistController extends Controller
 {
     public function index(Request $request)
     {
-        $watchlist = $request->user()->watchlist()->with('media')->paginate(20);
+        $query = $request->user()->watchlist()->with('media');
+
+        if ($request->has('watched')) {
+            if ($request->boolean('watched')) {
+                $query->whereNotNull('watched_at');
+            } else {
+                $query->whereNull('watched_at');
+            }
+        }
+
+        $watchlist = $query->paginate(20);
         return response()->json($watchlist);
     }
 
@@ -32,7 +42,8 @@ class WatchlistController extends Controller
         }
 
         $watchlist = $user->watchlist()->create([
-            'media_id' => $mediaId
+            'media_id' => $mediaId,
+            'watched_at' => now(),
         ]);
 
         return response()->json($watchlist, 201);

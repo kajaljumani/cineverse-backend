@@ -8,6 +8,7 @@ class UserPreference extends Model
 {
     protected $fillable = [
         'user_id',
+        'content_type',
         'genres',
         'languages',
         'providers',

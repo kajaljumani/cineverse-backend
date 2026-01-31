@@ -48,6 +48,28 @@ class WatchlistTest extends TestCase
         $this->assertCount(1, $user->watchlist);
     }
 
+    public function test_watchlist_index_can_filter_by_watched()
+    {
+        $user = User::factory()->create();
+        $watched = Media::factory()->create();
+        $unwatched = Media::factory()->create();
+
+        $user->watchlist()->create(['media_id' => $watched->id, 'watched_at' => now()]);
+        $user->watchlist()->create(['media_id' => $unwatched->id]);
+
+        // Filter: watched=true
+        $response = $this->actingAs($user)->getJson('/api/watchlist?watched=1');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonFragment(['media_id' => $watched->id]);
+
+        // Filter: watched=false
+        $response = $this->actingAs($user)->getJson('/api/watchlist?watched=0');
+        $response->assertStatus(200);
+        $response->assertJsonCount(1, 'data');
+        $response->assertJsonFragment(['media_id' => $unwatched->id]);
+    }
+
     public function test_watchlist_addition_does_not_create_interaction()
     {
         $user = User::factory()->create();

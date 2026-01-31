@@ -45,11 +45,18 @@ class FeedService
 
         // If results are empty (and no search is active, or even if it is), try to fetch from TMDB to fill DB
         // Only fetch if not searching, or if searching yields nothing (advanced: search TMDB)
-        if ($paginator->isEmpty() && !$search) {
-            if ($type === 'latest') {
-                $this->tmdbService->importFromTMDB($user); 
+        if ($paginator->isEmpty()) {
+            if ($search) {
+                // Fetch from TMDB search
+                $page = $paginator->currentPage();
+                $this->tmdbService->search('movie', $search, $page);
+                $this->tmdbService->search('tv', $search, $page);
             } else {
-                 $this->tmdbService->fetchAndCacheAll();
+                if ($type === 'latest') {
+                    $this->tmdbService->importFromTMDB($user); 
+                } else {
+                    $this->tmdbService->fetchAndCacheAll();
+                }
             }
             
             // Re-run query after fetch
@@ -116,6 +123,20 @@ class FeedService
 
             if ($preferences->release_year_end) {
                 $query->whereYear('release_date', '<=', $preferences->release_year_end);
+            }
+
+            // Content Type filtering
+            if ($preferences->content_type && $preferences->content_type !== 'any') {
+                $query->where('type', $preferences->content_type);
+            }
+
+            // Provider (Service) filtering
+            if (!empty($preferences->providers)) {
+                $query->where(function (Builder $q) use ($preferences) {
+                    foreach ($preferences->providers as $provider) {
+                        $q->orWhereJsonContains('providers', $provider);
+                    }
+                });
             }
 
             // Genre filtering

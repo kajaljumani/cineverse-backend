@@ -9,9 +9,9 @@ class UserPreferenceController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
+            'content_type' => 'nullable|string|in:movie,tv,any',
             'genres' => 'nullable|array',
             'languages' => 'nullable|array',
-            'providers' => 'nullable|array',
             'min_rating' => 'nullable|numeric|min:0|max:10',
             'release_year_start' => 'nullable|integer|min:1900',
             'release_year_end' => 'nullable|integer|min:1900',
@@ -30,7 +30,12 @@ class UserPreferenceController extends Controller
         $preference = $request->user()->preferences;
 
         if (!$preference) {
-            return response()->json(['message' => 'Preferences not found'], 404);
+            return response()->json([
+                'content_type' => 'any',
+                'genres' => [],
+                'languages' => [],
+                'min_rating' => 0,
+            ]);
         }
 
         return response()->json($preference);
