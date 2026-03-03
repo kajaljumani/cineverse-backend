@@ -26,12 +26,17 @@ class InteractionController extends Controller
         );
 
         // Handle Side Effects
-        // Note: 'like' does NOT add to watchlist anymore (per new requirements).
+        $newlyUnlocked = null;
         if ($type === 'watched') {
             $user->watchlist()->updateOrCreate(
                 ['media_id' => $mediaId],
                 ['watched_at' => now()]
             );
+            
+            // Award badges
+            $badge1 = app(\App\Services\BadgeService::class)->checkAndAward($user, 'genre_watch', $interaction->media->genres);
+            $badge2 = app(\App\Services\BadgeService::class)->checkAndAward($user, 'watch_count', $interaction->media->type);
+            $newlyUnlocked = $badge1 ?: $badge2;
         } elseif ($type === 'dislike') {
             // If disliked, ensure it's removed from watchlist if it was there previously
             $user->watchlist()->where('media_id', $mediaId)->delete();
@@ -39,7 +44,8 @@ class InteractionController extends Controller
 
         return response()->json([
             'message' => 'Interaction recorded',
-            'interaction' => $interaction
+            'interaction' => $interaction,
+            'newly_unlocked' => $newlyUnlocked
         ]);
     }
 }

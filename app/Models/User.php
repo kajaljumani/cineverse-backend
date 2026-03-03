@@ -13,16 +13,23 @@ class User extends Authenticatable
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasApiTokens;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
+        'last_online_at',
+        'is_admin',
+        'is_blocked',
+        'google_id',
+        'fcm_token',
     ];
+
+    protected $appends = ['avatar_url', 'is_online'];
+
+    public function badges()
+    {
+        return $this->belongsToMany(Badge::class, 'user_badges')->withTimestamps();
+    }
 
     public function preferences()
     {
@@ -42,6 +49,49 @@ class User extends Authenticatable
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function following()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'follower_id', 'following_id')->withTimestamps();
+    }
+
+    public function followers()
+    {
+        return $this->belongsToMany(User::class, 'follows', 'following_id', 'follower_id')->withTimestamps();
+    }
+
+    public function isFollowing(User $user)
+    {
+        return $this->following()->where('following_id', $user->id)->exists();
+    }
+
+    public function conversations()
+    {
+        return Conversation::where('user_one_id', $this->id)
+            ->orWhere('user_two_id', $this->id);
+    }
+
+    public function messages()
+    {
+        return $this->hasMany(Message::class, 'sender_id');
+    }
+
+    public function isOnline()
+    {
+        if (!$this->last_online_at) return false;
+        // Consider online if active in last 5 minutes
+        return $this->last_online_at->gt(now()->subMinutes(5));
+    }
+
+    public function getIsOnlineAttribute()
+    {
+        return $this->isOnline();
+    }
+
+    public function getAvatarUrlAttribute()
+    {
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=random";
     }
 
     /**
@@ -64,6 +114,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_online_at' => 'datetime',
         ];
     }
 }

@@ -38,6 +38,13 @@ class MediaResource extends JsonResource
             // Counts
             'comments_count' => $this->comments_count ?? 0,
             'likes_count' => $this->likes_count ?? 0,
+            'watchers' => $this->watchers()->take(3)->get()->map(function($user) {
+                return [
+                    'id' => $user->id,
+                    'name' => $user->name,
+                    'avatar_url' => $user->avatar_url,
+                ];
+            }),
         ];
     }
 }

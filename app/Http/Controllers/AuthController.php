@@ -59,7 +59,8 @@ class AuthController extends Controller
 
     public function profile(Request $request)
     {
-        return response()->json($request->user());
+        $user = $request->user()->loadCount(['followers', 'following', 'watchlist']);
+        return response()->json($user);
     }
 
     public function update(Request $request)
@@ -87,5 +88,71 @@ class AuthController extends Controller
         return response()->json([
             'message' => 'Account deleted successfully'
         ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = \App\Models\User::where('email', $request->email)->first();
+
+        if (!$user) {
+            // We return success even if user not found for security reasons
+            return response()->json(['message' => 'If an account exists, a reset code has been sent.']);
+        }
+
+        $token = str_pad(rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->updateOrInsert(
+            ['email' => $user->email],
+            ['token' => \Illuminate\Support\Facades\Hash::make($token), 'created_at' => now()]
+        );
+
+        // In a real app we'd send an email. Here we just log it.
+        \Illuminate\Support\Facades\Log::info("Password reset token for {$user->email}: {$token}");
+
+        return response()->json(['message' => 'A reset code has been sent to your email.']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'token' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $record = \Illuminate\Support\Facades\DB::table('password_reset_tokens')
+            ->where('email', $request->email)
+            ->first();
+
+        if (!$record || !\Illuminate\Support\Facades\Hash::check($request->token, $record->token)) {
+            return response()->json(['message' => 'Invalid email or token.'], 400);
+        }
+
+        // Check if token expired (e.g. 60 mins)
+        if (\Carbon\Carbon::parse($record->created_at)->addMinutes(60)->isPast()) {
+            return response()->json(['message' => 'Token has expired.'], 400);
+        }
+
+        $user = \App\Models\User::where('email', $request->email)->firstOrFail();
+        $user->update(['password' => \Illuminate\Support\Facades\Hash::make($request->password)]);
+
+        \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Password has been reset successfully.']);
+    }
+
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate([
+            'fcm_token' => 'required|string',
+        ]);
+
+        $request->user()->update([
+            'fcm_token' => $request->fcm_token,
+        ]);
+
+        return response()->json(['message' => 'FCM token updated successfully.']);
     }
 }

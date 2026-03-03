@@ -32,8 +32,8 @@ return [
         'api_key' => env('TMDB_API_KEY'),
     ],
 
-    'tmdb' => [
-        'api_key' => env('TMDB_API_KEY'),
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),
     ],
 
     'slack' => [

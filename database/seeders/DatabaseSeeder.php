@@ -22,5 +22,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@cineverse.app',
             'password' => \Illuminate\Support\Facades\Hash::make('password'),
         ]);
+
+        $this->call([
+            AdminSeeder::class,
+        ]);
     }
 }

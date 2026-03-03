@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Privacy Policy - Cineverse</title>
+    <title>Privacy Policy - SwipeScene</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
@@ -30,7 +30,7 @@
 
             <section class="mb-8">
                 <h2 class="text-2xl font-semibold mb-4 text-white">1. Introduction</h2>
-                <p class="text-gray-400">Welcome to Cineverse. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our application and tell you about your privacy rights and how the law protects you.</p>
+                <p class="text-gray-400">Welcome to SwipeScene. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our application and tell you about your privacy rights and how the law protects you.</p>
             </section>
 
             <section class="mb-8">
@@ -61,12 +61,12 @@
 
             <section class="mb-8">
                 <h2 class="text-2xl font-semibold mb-4 text-white">5. Contact Us</h2>
-                <p class="text-gray-400">If you have any questions about this privacy policy or our privacy practices, please contact us at: support@cineverse.app</p>
+                <p class="text-gray-400">If you have any questions about this privacy policy or our privacy practices, please contact us at: support@swipescene.app</p>
             </section>
         </div>
         
         <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-            &copy; 2026 Cineverse. All rights reserved.
+            &copy; 2026 SwipeScene. All rights reserved.
         </div>
     </div>
 </body>

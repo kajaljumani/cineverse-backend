@@ -27,7 +27,13 @@ class CommentController extends Controller
             'content' => $validated['content'],
         ]);
 
-        return response()->json($comment, 201);
+        // Award badges
+        $newlyUnlocked = app(\App\Services\BadgeService::class)->checkAndAward($request->user(), 'social_comment');
+
+        return response()->json([
+            'comment' => $comment,
+            'newly_unlocked' => $newlyUnlocked
+        ], 201);
     }
 
     public function destroy(Request $request, $id)

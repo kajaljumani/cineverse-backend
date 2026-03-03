@@ -45,6 +45,11 @@ class Media extends Model
         return $this->hasMany(Watchlist::class);
     }
 
+    public function watchers()
+    {
+        return $this->belongsToMany(User::class, 'watchlist', 'media_id', 'user_id')->withTimestamps();
+    }
+
     public function comments()
     {
         return $this->hasMany(Comment::class);

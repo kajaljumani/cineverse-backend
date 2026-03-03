@@ -1,4 +1,4 @@
-# Cineverse API Documentation
+# SwipeScene API Documentation
 
 Base URL: `http://your-domain.com/api` (e.g., `http://127.0.0.1:8000/api`)
 
@@ -388,5 +388,5 @@ Delete a user's own comment.
   ```
 
 
-Email: test@cineverse.app
+Email: test@swipescene.app
 Password: password

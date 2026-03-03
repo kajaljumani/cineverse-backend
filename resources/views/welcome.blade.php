@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Cineverse - Your Personal Cinema Guide</title>
+    <title>SwipeScene - Your Personal Cinema Guide</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700,800&display=swap" rel="stylesheet" />
     
@@ -104,7 +104,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                         </svg>
                     </div>
-                    <span class="font-bold text-xl tracking-tight">Cineverse</span>
+                    <span class="font-bold text-xl tracking-tight">SwipeScene</span>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
@@ -136,7 +136,7 @@
                 <span class="gradient-text">Favorite Movie</span>
             </h1>
             <p class="mt-4 max-w-2xl mx-auto text-xl text-gray-400 mb-10 animate-fade-in-up" style="animation-delay: 0.2s">
-                Swipe, match, and watch. Cineverse is your personal cinema guide waiting to be discovered.
+                Swipe, match, and watch. SwipeScene is your personal cinema guide waiting to be discovered.
             </p>
             
             <div class="flex justify-center gap-4 animate-fade-in-up" style="animation-delay: 0.4s">
@@ -161,7 +161,7 @@
     <div id="features" class="py-20 bg-[#131322]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-16">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why Cineverse?</h2>
+                <h2 class="text-3xl md:text-4xl font-bold mb-4">Why SwipeScene?</h2>
                 <div class="w-20 h-1 gradient-bg mx-auto rounded-full"></div>
             </div>
 
@@ -247,7 +247,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
                         </svg>
                     </div>
-                    <span class="font-bold text-xl">Cineverse</span>
+                    <span class="font-bold text-xl">SwipeScene</span>
                 </div>
                 <div class="flex space-x-6 text-gray-400">
                     <a href="#" class="hover:text-white transition-colors">About</a>
@@ -257,7 +257,7 @@
                 </div>
             </div>
             <div class="mt-8 text-center text-gray-600 text-sm">
-                &copy; 2026 Cineverse. All rights reserved.
+                &copy; 2026 SwipeScene. All rights reserved.
             </div>
         </div>
     </footer>
