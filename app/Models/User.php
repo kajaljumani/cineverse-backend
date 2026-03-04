@@ -18,13 +18,15 @@ class User extends Authenticatable
         'email',
         'password',
         'last_online_at',
+        'last_login_at',
+        'last_logout_at',
         'is_admin',
         'is_blocked',
         'google_id',
         'fcm_token',
     ];
 
-    protected $appends = ['avatar_url', 'is_online'];
+    protected $appends = ['avatar_url', 'is_online', 'status'];
 
     public function badges()
     {
@@ -91,7 +93,27 @@ class User extends Authenticatable
 
     public function getAvatarUrlAttribute()
     {
-        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=random";
+        return "https://ui-avatars.com/api/?name=" . urlencode($this->name) . "&background=6d28d9&color=fff&size=512";
+    }
+
+    public function getStatusAttribute()
+    {
+        $now = now();
+        $lastLogin = $this->last_login_at;
+        $lastLogout = $this->last_logout_at;
+
+        // Offline if logout is after login OR last login was more than 60 days ago OR no login yet
+        if (($lastLogout && $lastLogin && $lastLogout->gt($lastLogin)) || ($lastLogin && $lastLogin->diffInDays($now) >= 60) || !$lastLogin) {
+            return 'offline';
+        }
+
+        // Online if login was within 5 days
+        if ($lastLogin->diffInDays($now) < 5) {
+            return 'online';
+        }
+
+        // Away if login was more than 5 days ago (and hasn't explicitly logged out)
+        return 'away';
     }
 
     /**
@@ -115,6 +137,8 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'last_online_at' => 'datetime',
+            'last_login_at' => 'datetime',
+            'last_logout_at' => 'datetime',
         ];
     }
 }

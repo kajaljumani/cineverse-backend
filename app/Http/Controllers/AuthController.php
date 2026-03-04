@@ -18,6 +18,7 @@ class AuthController extends Controller
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'last_login_at' => now(),
         ]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
@@ -38,6 +39,7 @@ class AuthController extends Controller
         }
 
         $user = \App\Models\User::where('email', $request['email'])->firstOrFail();
+        $user->update(['last_login_at' => now()]);
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
@@ -50,7 +52,9 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        $user = $request->user();
+        $user->currentAccessToken()->delete();
+        $user->update(['last_logout_at' => now()]);
 
         return response()->json([
             'message' => 'Logged out successfully'

@@ -46,12 +46,14 @@ class GoogleAuthController extends Controller
                     'email' => $email,
                     'password' => Hash::make(\Illuminate\Support\Str::random(16)), // Random password for social login
                     'google_id' => $googleId, // Assuming you might want to store this
+                    'last_login_at' => now(),
                 ]);
             } else {
                 // Update Google ID if not set
-                if (empty($user->google_id)) {
-                    $user->update(['google_id' => $googleId]);
-                }
+                $user->update([
+                    'google_id' => $googleId,
+                    'last_login_at' => now(),
+                ]);
             }
 
             // Create Sanctum Token
