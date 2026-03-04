@@ -125,14 +125,14 @@ class AdminController extends Controller
 
     public function syncTMDB(TMDBService $tmdb)
     {
-        // Placeholder for TMDB sync logic
-        // In a real app, this would dispatch a job
         try {
-             // Let's just pull some popular movies as an example if we were to implement it now
-             // For now, return a messaging
-             return back()->with('success', 'TMDB sync started in background.');
+            // This method fetches trending/popular movies and tv shows
+            $tmdb->fetchAndCacheAll();
+            
+            return back()->with('success', 'TMDB sync completed successfully. New movies and series have been added.');
         } catch (\Exception $e) {
-             return back()->with('error', 'Failed to sync with TMDB: ' . $e->getMessage());
+            \Log::error("TMDB Sync Error: " . $e->getMessage());
+            return back()->with('error', 'Failed to sync with TMDB. Please check logs for details.');
         }
     }
 
