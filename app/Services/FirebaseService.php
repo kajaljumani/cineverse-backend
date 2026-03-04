@@ -54,6 +54,7 @@ class FirebaseService
         $accessToken = $this->getAccessToken();
 
         if (!$accessToken) {
+            Log::error("FCM Send aborted: Could not obtain access token.");
             return false;
         }
 
@@ -88,10 +89,13 @@ class FirebaseService
             ],
         ];
 
+        Log::info("FCM Sending to {$token} with payload: " . json_encode($payload));
+
         $response = Http::withToken($accessToken)
             ->post($url, $payload);
 
         if ($response->successful()) {
+            Log::info("FCM Sent successfully to token: " . substr($token, 0, 10) . "...");
             return true;
         }
 
@@ -107,11 +111,15 @@ class FirebaseService
         $tokens = \App\Models\User::whereNotNull('fcm_token')->pluck('fcm_token');
         $successCount = 0;
 
+        Log::info("FCM Broadcasting to " . count($tokens) . " users.");
+
         foreach ($tokens as $token) {
             if ($this->sendNotification($token, $title, $body, $data)) {
                 $successCount++;
             }
         }
+
+        Log::info("FCM Broadcast finished. Successes: {$successCount}/" . count($tokens));
 
         return $successCount;
     }
