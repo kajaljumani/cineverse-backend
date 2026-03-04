@@ -6,13 +6,17 @@
     <title>Privacy Policy - SwipeScene</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
-        @vite(['resources/css/app.css', 'resources/js/app.js'])
-    @else
-        <script src="https://cdn.tailwindcss.com"></script>
-    @endif
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { background-color: #0f0f1a; color: #e4d9f5; }
+        .gradient-text {
+            background: linear-gradient(to right, #d946ef, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
 </head>
-<body class="bg-gray-900 text-gray-100 font-sans antialiased">
+<body class="font-sans antialiased">
     <div class="max-w-4xl mx-auto px-6 py-12">
         <div class="mb-8">
             <a href="/" class="text-purple-400 hover:text-purple-300 flex items-center gap-2">
@@ -23,50 +27,56 @@
             </a>
         </div>
 
-        <h1 class="text-4xl font-bold mb-8 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-600">Privacy Policy</h1>
+        <h1 class="text-4xl font-bold mb-8 gradient-text">Privacy Policy</h1>
         
-        <div class="prose prose-invert max-w-none">
-            <p class="text-lg text-gray-300 mb-6">Last updated: January 1, 2026</p>
+        <div class="prose prose-invert max-w-none text-gray-400 space-y-6">
+            <p>Last updated: March 4, 2026</p>
 
-            <section class="mb-8">
+            <section>
                 <h2 class="text-2xl font-semibold mb-4 text-white">1. Introduction</h2>
-                <p class="text-gray-400">Welcome to SwipeScene. We respect your privacy and are committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our application and tell you about your privacy rights and how the law protects you.</p>
+                <p>Welcome to SwipeScene. At Galaxy Web Services, we are committed to protecting your privacy and providing a safe experience. This Privacy Policy explains how we collect, use, and safeguard your data when you use our mobile application and website.</p>
             </section>
 
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-white">2. Data We Collect</h2>
-                <p class="text-gray-400 mb-2">We may collect, use, store and transfer different kinds of personal data about you which we have grouped together follows:</p>
-                <ul class="list-disc pl-5 text-gray-400 space-y-2">
-                    <li><strong>Identity Data:</strong> includes first name, last name, username or similar identifier.</li>
-                    <li><strong>Contact Data:</strong> includes email address.</li>
-                    <li><strong>Technical Data:</strong> includes internet protocol (IP) address, your login data, browser type and version, time zone setting and location, browser plug-in types and versions, operating system and platform.</li>
-                    <li><strong>Usage Data:</strong> includes information about how you use our app, such as movie preferences, watchlists, and interactions (likes/dislikes).</li>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">2. Data Collection</h2>
+                <p>We collect information to provide a better, personalized entertainment experience:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-2">
+                    <li><strong>Account Information:</strong> Name, email address, and profile picture (via Google/Apple Sign-In).</li>
+                    <li><strong>Preferences:</strong> Your genre choices, watchlists, and movie/series interactions (swipes, likes, dislikes).</li>
+                    <li><strong>Usage Data:</strong> Information about how you interact with our features to improve recommendation accuracy.</li>
+                    <li><strong>Device Information:</strong> Basic device details for technical support and analytics.</li>
                 </ul>
             </section>
 
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-white">3. How We Use Your Data</h2>
-                <p class="text-gray-400">We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
-                <ul class="list-disc pl-5 text-gray-400 mt-2 space-y-2">
-                    <li>To provide the personalized movie discovery service.</li>
-                    <li>To manage your account and preferences.</li>
-                    <li>To improve our recommendation algorithms.</li>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">3. How We Use Data</h2>
+                <p>Your data helps us:</p>
+                <ul class="list-disc pl-5 mt-2 space-y-2">
+                    <li>Personalize discovery feeds based on your unique cinematic taste.</li>
+                    <li>Enable social features like sharing and seeing what "buddies" are watching.</li>
+                    <li>Award badges and track your progress as a cinephile.</li>
+                    <li>Send push notifications for new releases or buddy messages (if enabled).</li>
                 </ul>
             </section>
 
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-white">4. Data Security</h2>
-                <p class="text-gray-400">We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorized way, altered or disclosed.</p>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">4. Data Sharing & Security</h2>
+                <p>We do not sell your personal data. We use industry-standard encryption to protect your information and only share data with service providers (like TMDB) as necessary to provide core app functionality.</p>
             </section>
 
-            <section class="mb-8">
-                <h2 class="text-2xl font-semibold mb-4 text-white">5. Contact Us</h2>
-                <p class="text-gray-400">If you have any questions about this privacy policy or our privacy practices, please contact us at: support@swipescene.app</p>
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">5. Your Rights</h2>
+                <p>You can manage your data directly within the SwipeScene app settings, including profile updates and account deletion requests. For further assistance, please contact us.</p>
+            </section>
+
+            <section>
+                <h2 class="text-2xl font-semibold mb-4 text-white">6. Contact Us</h2>
+                <p>If you have any questions or concerns regarding this policy, please reach out to us at <a href="mailto:info@galaxywebservices.in" class="text-purple-400">info@galaxywebservices.in</a>.</p>
             </section>
         </div>
         
         <div class="mt-12 pt-8 border-t border-gray-800 text-center text-gray-500 text-sm">
-            &copy; 2026 SwipeScene. All rights reserved.
+            &copy; 2026 Galaxy Web Services. All rights reserved.
         </div>
     </div>
 </body>

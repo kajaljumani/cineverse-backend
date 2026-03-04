@@ -10,6 +10,10 @@ Route::get('/privacy', function () {
     return view('privacy');
 });
 
+Route::get('/terms', function () {
+    return view('terms');
+});
+
 // Admin Routes
 use App\Http\Controllers\AdminController;
 
