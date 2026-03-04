@@ -33,6 +33,8 @@ class ChatController extends Controller
                         'name' => $otherUser->name,
                         'avatar_url' => $otherUser->avatar_url,
                         'is_online' => $otherUser->is_online,
+                        'status' => $otherUser->status,
+                        'google_id' => $otherUser->google_id,
                     ],
                     'last_message' => $lastMessage ? [
                         'content' => $lastMessage->content,
